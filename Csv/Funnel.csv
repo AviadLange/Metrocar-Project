@@ -1,0 +1,5 @@
+"step","step_name","number_of_users","previous_step","drop_off","percent_of_top"
+"1","Visitors","23608","","","1.00"
+"2","Sign-ups","17623","23608","0.25","0.75"
+"3","Ride-requesters","12406","17623","0.30","0.53"
+"4","Purchasers","6233","12406","0.50","0.26"
