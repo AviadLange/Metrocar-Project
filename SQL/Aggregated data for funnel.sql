@@ -1,3 +1,7 @@
+/*The following script creates an aggregated database,
+for every step of the ride with Metrocar process.*/
+
+--First step, app downloads.
 WITH app_download AS (
   SELECT platform, age_range, DATE_TRUNC('day', download_ts) AS download_date, COUNT(app_download_key) AS users, 0 AS rides
 	FROM signups AS s
@@ -5,6 +9,7 @@ WITH app_download AS (
 	ON a.app_download_key = s.session_id
 	GROUP BY platform, age_range, download_date),
 
+--Second step, signups.
 signup AS (
   SELECT platform, age_range, DATE_TRUNC('day', download_ts) AS download_date, COUNT(user_id) AS users, 0 AS rides
 	FROM signups AS s
@@ -12,6 +17,7 @@ signup AS (
 	ON a.app_download_key = s.session_id
 	GROUP BY platform, age_range, download_date),
 
+--Third step, ride requests.
 ride_requested AS (
   SELECT platform, age_range, DATE_TRUNC('day', download_ts) AS download_date, COUNT(DISTINCT user_id) AS users, COUNT(ride_id) AS rides
   FROM signups AS s
@@ -21,6 +27,7 @@ ride_requested AS (
   USING(user_id)
   GROUP BY platform, age_range, download_date),
 
+--Fourth step, rides accepted by the driver.
 ride_accepted AS (
   SELECT platform, age_range, DATE_TRUNC('day', download_ts) AS download_date, COUNT(DISTINCT user_id) AS users, COUNT(ride_id) AS rides
   FROM signups AS s
@@ -31,6 +38,7 @@ ride_accepted AS (
   WHERE accept_ts IS NOT NULL
   GROUP BY platform, age_range, download_date),
  
+--Fifth step, rides completed.
 ride_completed AS (
   SELECT platform, age_range, DATE_TRUNC('day', download_ts) AS download_date, COUNT(DISTINCT user_id) AS users, COUNT(ride_id) AS rides
   FROM signups AS s
@@ -41,6 +49,7 @@ ride_completed AS (
   WHERE dropoff_ts IS NOT NULL
   GROUP BY platform, age_range, download_date),
 
+--Sixth step, payments for these rides. 
 ride_paid AS (
   SELECT platform, age_range, DATE_TRUNC('day', download_ts) AS download_date, COUNT(DISTINCT user_id) AS users, COUNT(ride_id) AS rides
   FROM signups AS s
@@ -53,6 +62,7 @@ ride_paid AS (
   WHERE charge_status = 'Approved'
   GROUP BY platform, age_range, download_date),
 
+--Seventh (and last) step, reviews of these rides.
 reviewed AS(
 	SELECT platform, age_range, DATE_TRUNC('day', download_ts) AS download_date, COUNT(DISTINCT user_id) AS users, COUNT(ride_id) AS rides
   FROM signups AS s
@@ -62,7 +72,7 @@ reviewed AS(
   USING(user_id)
   GROUP BY platform, age_range, download_date)
 
-
+--Unions the 7 steps into one DB sub-grouped by platform, age group and download date.
 SELECT 1 AS step, 'Downloads' AS step_name, * FROM app_download
 UNION
 SELECT 2 AS step, 'Signups' AS step_name, * FROM signup
