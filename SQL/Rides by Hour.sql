@@ -10,4 +10,4 @@ ON a.app_download_key = s.session_id
 JOIN ride_requests
 USING(user_id)
 GROUP BY request_time, request_day, platform, age_range
-ORDER BY request_time
+ORDER BY request_time;
