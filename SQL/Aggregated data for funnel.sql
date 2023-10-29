@@ -86,4 +86,4 @@ UNION
 SELECT 6 AS step, 'Payments' AS step_name, * FROM ride_paid
 UNION
 SELECT 7 AS step, 'Reviews' AS step_name, * FROM reviewed
-ORDER BY step
+ORDER BY step;
