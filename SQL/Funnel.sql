@@ -33,4 +33,4 @@ SELECT *,
   ROUND((1.0 - number_of_users::NUMERIC/LAG(number_of_users, 1) OVER ()),2) AS drop_off,
   ROUND(number_of_users/(FIRST_VALUE(number_of_users::NUMERIC) OVER (
   	ORDER BY step)),2) AS percent_of_top
-FROM steps
+FROM steps;
