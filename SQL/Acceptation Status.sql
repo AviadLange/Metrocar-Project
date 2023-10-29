@@ -73,4 +73,4 @@ merged_data AS(
 SELECT *, ROUND((rides/number_of_users),2) AS rides_rate
 FROM merged_data
 JOIN users
-USING(status)
+USING(status);
